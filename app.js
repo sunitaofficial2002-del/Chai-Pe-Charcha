@@ -888,3 +888,28 @@ function generatePDFReport(days) {
         html2pdf().set(opt).from(reportDiv).save();
     });
 }
+
+// ============================================================================
+// FULLSCREEN & HISTORY HACKS
+// ============================================================================
+
+// Double click title for fullscreen
+const appTitle = document.querySelector('.app-title');
+if (appTitle) {
+    appTitle.addEventListener('dblclick', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    });
+}
+
+// Push 5 back pages to prevent accidental exits on mobile
+window.addEventListener('load', () => {
+    for (let i = 0; i < 5; i++) {
+        history.pushState({ page: i }, "", "");
+    }
+});

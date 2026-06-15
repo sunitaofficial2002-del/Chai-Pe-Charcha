@@ -850,6 +850,10 @@ input:focus, select:focus {
     }
     
     .main-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
         width: 100%;
         height: 64px; 
         flex-direction: row;
@@ -878,6 +882,7 @@ input:focus, select:focus {
     /* Sections */
     .content-area {
         padding: var(--space-16);
+        padding-bottom: 80px; /* Space for fixed bottom nav */
     }
     .section-header h2 { font-size: 22px; }
     
