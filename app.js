@@ -879,7 +879,7 @@ function generatePDFReport(days) {
         
         const opt = {
             margin:       0.5,
-            filename:     \`Report_${timeframeText.replace(/ /g, '_')}.pdf\`,
+            filename:     `Report_${timeframeText.replace(/ /g, '_')}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2 },
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
