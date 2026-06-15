@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chai Pe Charcha</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols Rounded for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+    <!-- Firebase v9 Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="login-card">
+            <div class="logo">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#logo-gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <defs>
+                        <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#0071e3" />
+                            <stop offset="100%" stop-color="#2997ff" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+                    <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+                    <line x1="6" y1="2" x2="6" y2="4"/>
+                    <line x1="10" y1="2" x2="10" y2="4"/>
+                    <line x1="14" y1="2" x2="14" y2="4"/>
+                </svg>
+            </div>
+            <h1>Chai Pe Charcha</h1>
+            <p class="tagline">Smart inventory & sales management</p>
+            <button id="btn-login" class="btn btn-pill btn-light">
+                <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Continue with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- Main App Layout -->
+    <div id="main-app" class="screen">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <span class="app-title">Chai Pe Charcha</span>
+            </div>
+            <div class="header-right">
+                <div class="profile-container" id="profile-btn">
+                    <img id="user-photo" src="" alt="Profile" class="profile-pic">
+                    <!-- Dropdown -->
+                    <div class="profile-dropdown" id="profile-dropdown">
+                        <div class="dropdown-header">
+                            <span id="user-name" class="user-name"></span>
+                            <span id="user-email" class="user-email"></span>
+                            <span id="user-role-badge" class="badge"></span>
+                        </div>
+                        <button id="btn-logout" class="dropdown-item text-danger">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-body">
+            <!-- Navigation Sidebar (Desktop) / Bottom Nav (Mobile) -->
+            <nav class="main-nav">
+                <a href="#" class="nav-item active" data-target="sales">
+                    <span class="material-symbols-rounded">point_of_sale</span>
+                    <span class="nav-label">Sales</span>
+                </a>
+                <a href="#" class="nav-item" data-target="inventory">
+                    <span class="material-symbols-rounded">inventory_2</span>
+                    <span class="nav-label">Inventory</span>
+                </a>
+                <a href="#" class="nav-item owner-only" data-target="expenses">
+                    <span class="material-symbols-rounded">receipt_long</span>
+                    <span class="nav-label">Expenses</span>
+                </a>
+                <a href="#" class="nav-item owner-only" data-target="dashboard">
+                    <span class="material-symbols-rounded">bar_chart</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+            </nav>
+
+            <!-- Sections Container -->
+            <main class="content-area">
+                
+                <!-- Section: Inventory -->
+                <section id="section-inventory" class="content-section">
+                    <div class="summary-cards owner-only" id="inventory-summary" style="grid-template-columns: repeat(2, 1fr); margin-bottom: var(--space-24);">
+                        <div class="stat-card">
+                            <span class="stat-label">Total Inventory Value</span>
+                            <h3 class="stat-value text-primary" id="stat-inv-value">₹0</h3>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Total Potential Profit</span>
+                            <h3 class="stat-value text-success" id="stat-inv-profit">₹0</h3>
+                        </div>
+                    </div>
+                    <div class="section-layout">
+                    <div class="grid-layout" id="inventory-list">
+                        <!-- Items populated via JS -->
+                    </div>
+                    <button class="fab btn-primary owner-only" id="fab-add-item">
+                        <span class="material-symbols-rounded">add</span>
+                    </button>
+                </section>
+
+                <!-- Section: Sales -->
+                <section id="section-sales" class="content-section active">
+                    <div class="summary-cards" id="sales-summary">
+                        <div class="stat-card">
+                            <span class="stat-label">Pending Balance</span>
+                            <h3 class="stat-value text-danger" id="stat-pending">₹0</h3>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Cash Received</span>
+                            <h3 class="stat-value" id="stat-cash">₹0</h3>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Online Received</span>
+                            <h3 class="stat-value text-primary" id="stat-online">₹0</h3>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Total Collection</span>
+                            <h3 class="stat-value" id="stat-total">₹0</h3>
+                        </div>
+                    </div>
+                    <div class="list-layout" id="sales-list">
+                        <!-- Sales bills populated via JS -->
+                    </div>
+                    <button class="fab btn-primary" id="fab-add-sale">
+                        <span class="material-symbols-rounded">add</span>
+                    </button>
+                </section>
+
+                <!-- Section: Expenses -->
+                <section id="section-expenses" class="content-section">
+                    <div class="summary-cards owner-only" id="expenses-summary" style="margin-bottom: var(--space-24);">
+                        <div class="stat-card">
+                            <span class="stat-label">Available Balance</span>
+                            <h3 class="stat-value text-primary" id="stat-available-balance">₹0</h3>
+                        </div>
+                    </div>
+                    <div class="list-layout" id="expenses-list">
+                        <!-- Expenses populated via JS -->
+                    </div>
+                    <button class="fab btn-primary owner-only" id="fab-add-expense">
+                        <span class="material-symbols-rounded">add</span>
+                    </button>
+                </section>
+
+                <!-- Section: Dashboard -->
+                <section id="section-dashboard" class="content-section">
+                    <div class="dashboard-grid">
+                        <div class="dash-card">
+                            <h3>Total Collection</h3>
+                            <h2 id="dash-collection" class="text-primary">₹0</h2>
+                        </div>
+                        <div class="dash-card">
+                            <h3>Overall Profit</h3>
+                            <h2 id="dash-profit" class="text-success">₹0</h2>
+                        </div>
+                        <div class="dash-card">
+                            <h3>Pending Balance</h3>
+                            <h2 id="dash-pending" class="text-danger">₹0</h2>
+                        </div>
+                        <div class="dash-card full-width">
+                            <h3>Sales Improvement Suggestions</h3>
+                            <ul id="dash-suggestions" class="tips-list">
+                                <!-- Populated via JS -->
+                            </ul>
+                        </div>
+                        <div class="dash-card">
+                            <h3>Most Sold Items (Top 5)</h3>
+                            <ul id="dash-top-items" class="ranking-list">
+                                <!-- Populated via JS -->
+                            </ul>
+                        </div>
+                        <div class="dash-card">
+                            <h3>Low Stock Alerts</h3>
+                            <ul id="dash-low-stock" class="ranking-list text-danger">
+                                <!-- Populated via JS -->
+                            </ul>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-pill full-width" style="margin-top: var(--space-16);" onclick="openModal('report')">
+                        Download PDF Report
+                    </button>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals Overlay -->
+    <div id="modal-backdrop" class="modal-backdrop">
+        
+        <!-- Add Item Modal -->
+        <div id="modal-item" class="modal">
+            <div class="modal-header">
+                <h3 id="modal-item-title">Add Item</h3>
+                <button class="btn-icon btn-close-modal"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-item">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="item-name" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Purchase Price (₹)</label>
+                            <input type="number" id="item-purchase-price" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sale Price (₹)</label>
+                            <input type="number" id="item-sale-price" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group margin-display">
+                        <label>Margin</label>
+                        <div class="read-only-field" id="item-margin">₹0.00</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Opening Stock</label>
+                            <input type="number" id="item-opening-stock" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Low Stock Alert</label>
+                            <input type="number" id="item-low-stock" required>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary btn-pill full-width">Save Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Stock Modal -->
+        <div id="modal-add-stock" class="modal">
+            <div class="modal-header">
+                <h3 id="modal-add-stock-title">Add Stock</h3>
+                <button class="btn-icon btn-close-modal"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-stock">
+                    <div class="form-group">
+                        <label>Quantity to Add</label>
+                        <input type="number" id="add-stock-qty" value="1" min="1" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary btn-pill full-width">Add to Stock</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add/Edit Sale Modal -->
+        <div id="modal-sale" class="modal">
+            <div class="modal-header">
+                <h3 id="modal-sale-title">New Sale (Bill #<span id="sale-bill-num"></span>)</h3>
+                <button class="btn-icon btn-close-modal"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body flex-col h-full">
+                <div class="search-container">
+                    <span class="material-symbols-rounded search-icon">search</span>
+                    <input type="text" id="sale-item-search" placeholder="Search items to add...">
+                    <div class="search-results" id="sale-search-results">
+                        <!-- JS populated -->
+                    </div>
+                </div>
+                
+                <div class="cart-container flex-grow">
+                    <div id="sale-cart-items" class="cart-items-list">
+                        <!-- JS populated -->
+                    </div>
+                </div>
+                
+                <div class="sale-footer">
+                    <div class="sale-total-row">
+                        <span>Total Amount</span>
+                        <h2 id="sale-total-amount">₹0.00</h2>
+                    </div>
+                    <div class="payment-modes" id="sale-payment-modes">
+                        <button class="btn btn-mode active" data-mode="unpaid">Unpaid</button>
+                        <button class="btn btn-mode" data-mode="online">Online</button>
+                        <button class="btn btn-mode" data-mode="cash">Cash</button>
+                    </div>
+                    <button id="btn-close-bill" class="btn btn-primary btn-pill full-width">Close Bill</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Expense Modal -->
+        <div id="modal-expense" class="modal">
+            <div class="modal-header">
+                <h3>Add Expense</h3>
+                <button class="btn-icon btn-close-modal"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-expense">
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="expense-desc" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (₹)</label>
+                        <input type="number" id="expense-amount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="expense-category" required>
+                            <option value="Doodh">Doodh</option>
+                            <option value="Cold Drinks">Cold Drinks</option>
+                            <option value="Disposables">Disposables</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary btn-pill full-width">Save Expense</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Download Report Modal -->
+        <div id="modal-report" class="modal">
+            <div class="modal-header">
+                <h3>Download Report</h3>
+                <button class="btn-icon btn-close-modal"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-report">
+                    <div class="form-group">
+                        <label>Select Timeframe</label>
+                        <select id="report-timeframe" required>
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 1 Month</option>
+                            <option value="60">Last 2 Months</option>
+                            <option value="365">This Year</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary btn-pill full-width">Generate PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- html2pdf.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Main App Script -->
+    <script src="app.js?v=2"></script>
+</body>
+</html>
